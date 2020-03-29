@@ -3,6 +3,10 @@ data
 
 # Python
 __pycache__
+.venv
+.env
+venv
+env
 
 # PyCharm
 .idea
