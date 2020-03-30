@@ -6,12 +6,15 @@ class Antibody:
     This class represents one solution to the Santa's Workshop 2019
     problem.
     """
-    def __init__(self):
+    def __init__(self, families=None):
         """
         Create a new object of class `Antibody`.
+
+        :param families: numpy.ndarray (default: None),
         """
-        self.families = None
+        self.families = families
         self.days = None
+        self.affinity_value = 0
 
     def generate_solution(self, df_families):
         """
@@ -57,3 +60,16 @@ class Antibody:
 
         self.families = families
         self.days = days
+
+    def affinity(self, other):
+        """
+        Compute affinity between `self` and `other` antibodies.
+
+        Affinity is the number of families that have same day in both
+        antibodies.
+
+        :param other: Antibody, antibody towards which the affinity is
+            computed.
+        :return: int, affinity between `self` and `other` antibodies.
+        """
+        return (self.families == other.families).sum()
