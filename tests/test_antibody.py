@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+import pandas as pd
 from santas_workshop_tour.antibody import Antibody
 
 
@@ -24,3 +25,46 @@ class TestAntibody(unittest.TestCase):
                     f'`{families2}` is `{a1.affinity_value}`, expected '
                     f'`{expected_affinity}`.'
             )
+
+    def test_fitness(self):
+        """Test fitness computation."""
+        family_size = 126
+        n_days = 11
+        df_families = pd.DataFrame(
+            [
+                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size + 1],
+                [1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [4, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
+                [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size]
+            ],
+            columns=[
+                'family_id', 'choice_0', 'choice_1', 'choice_2', 'choice_3',
+                'choice_4', 'choice_5', 'choice_6', 'choice_7', 'choice_8',
+                'choice_9', 'n_people'
+            ]
+        )
+        families = np.array([i for i in range(1, n_days + 1)])
+        days = np.array([{'size': family_size} for _ in range(n_days)])
+        days[0]['size'] += 1
+
+        expected_fitness = 50 * 2 + 100 + 200 * 2 + 300 * 2 + 400 + 500 * 2
+        expected_fitness += (9 * 3 + 18 * 2 + 36 * 4 + 199 + 398) * family_size
+        expected_fitness += 1 / 400. * family_size**(1 / 2.) * (n_days - 1)
+        expected_fitness += 2 / 400. * (family_size + 1)**(1 / 2. + 1 / 50.)
+
+        antibody = Antibody(families=families, days=days)
+        fitness = antibody.fitness(df_families)
+
+        self.assertAlmostEqual(
+            fitness,
+            expected_fitness,
+            places=7,
+            msg=f'Fitness is {fitness}, expected {expected_fitness}.'
+        )
