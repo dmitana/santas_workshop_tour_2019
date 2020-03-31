@@ -34,6 +34,7 @@ class Antibody:
 
         :param df_families: pandas.DataFrame, contains size and
             preferences of all families.
+        :return: Antibody, self object.
         """
         n_families, n_days = 5000, 100
         families = np.empty(n_families, dtype=object)
@@ -66,6 +67,7 @@ class Antibody:
 
         self.families = families
         self.days = days
+        return self
 
     def affinity(self, other):
         """
@@ -83,6 +85,8 @@ class Antibody:
     def fitness(self, df_families):
         """
         Compute fitness function.
+
+        Computed fitness is stored to `self.fitness`.
 
         Fitness is the sum of `preference cost` and `accounting penalty`.
 
@@ -102,8 +106,7 @@ class Antibody:
 
         :param df_families: pandas.DataFrame, contains size and
             preferences of all families.
-        :return: float, the fitness value computed from `self.families`,
-            `self.days` and families' preferences in `df_families`.
+        :return: Antibody, self object.
         """
         preference_cost, accounting_penalty = 0, 0
 
@@ -146,4 +149,5 @@ class Antibody:
             accounting_penalty += (day_size - 125) / 400. * day_size**exponent
             previous_day = day
 
-        return preference_cost + accounting_penalty
+        self.fitness_value = preference_cost + accounting_penalty
+        return self

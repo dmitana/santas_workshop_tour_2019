@@ -60,11 +60,12 @@ class TestAntibody(unittest.TestCase):
         expected_fitness += 2 / 400. * (family_size + 1)**(1 / 2. + 1 / 50.)
 
         antibody = Antibody(families=families, days=days)
-        fitness = antibody.fitness(df_families)
+        antibody.fitness(df_families)
 
         self.assertAlmostEqual(
-            fitness,
+            antibody.fitness_value,
             expected_fitness,
             places=7,
-            msg=f'Fitness is {fitness}, expected {expected_fitness}.'
+            msg=f'Fitness of antibody is `{antibody.fitness_value}`, expected '
+                f'`{expected_fitness}`.'
         )
