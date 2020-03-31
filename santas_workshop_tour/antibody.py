@@ -36,7 +36,7 @@ class Antibody:
             preferences of all families.
         :return: Antibody, self object.
         """
-        n_families, n_days = 5000, 100
+        n_families, n_days = len(df_families), 100
         families = np.empty(n_families, dtype=object)
         days = np.empty(n_days, dtype=object)
         days_under_limits = np.ones(n_days, dtype=np.bool)
