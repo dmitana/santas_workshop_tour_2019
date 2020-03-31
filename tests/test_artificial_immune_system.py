@@ -69,7 +69,7 @@ class TestArtificialImmuneSystem(unittest.TestCase):
         """Test fitness computation."""
         n_families, family_size = 3, 125
         df_families = get_df_families(n_families, family_size)
-        days = np.array([{'size': family_size} for _ in range(n_families)])
+        days = np.array([family_size] * n_families)
         population = (
             Antibody(families=np.array([1, 2, 3]), days=days),
             Antibody(families=np.array([3, 3, 3]), days=days),

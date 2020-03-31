@@ -11,11 +11,10 @@ class Antibody:
         Create a new object of class `Antibody`.
 
         :param families: numpy.ndarray (default: None), array of target
-            days for each family, where index represent the family.
-        :param days: numpy.ndarray (default: None), array of dictionaries
-            where are number of people and IDs of all families stored at
-            'size' and 'families' keys, respectively. Index represents
-            the day.
+            days for each family, where index represents the family.
+        :param days: numpy.ndarray (default: None), array of number of
+            people scheduled for each day, where index represents the
+            day.
         """
         self.families = families
         self.days = days
@@ -29,23 +28,17 @@ class Antibody:
         Target day for each family will be stored to `self.families`,
         where index represent the family.
 
-        Number of people and IDs of all families scheduled for given day
-        will be stored to `self.days`. Index represents the day.
+        Number of people scheduled for each day will be stored to
+        `self.days`, where index represents the day.
 
         :param df_families: pandas.DataFrame, contains size and
             preferences of all families.
         :return: Antibody, self object.
         """
         n_families, n_days = len(df_families), 100
-        families = np.empty(n_families, dtype=object)
-        days = np.empty(n_days, dtype=object)
+        families = np.empty(n_families, dtype=int)
+        days = np.zeros(n_days, dtype=int)
         days_under_limits = np.ones(n_days, dtype=np.bool)
-
-        # Initialize days
-        for i in range(n_days):
-            # Num of people, IDs of families
-            days[i] = {'size': 0, 'families': []}
-            days_under_limits[i] = i
 
         # Generate random day for each family
         for i in range(n_families):
@@ -57,11 +50,10 @@ class Antibody:
                     day = np.nonzero(days_under_limits)[0][day]
                 else:
                     day = np.random.randint(0, n_days)
-                if (days[day]['size'] + family_size) <= 300:
-                    days[day]['size'] += family_size
-                    days[day]['families'].append(i)
+                if (days[day] + family_size) <= 300:
+                    days[day] += family_size
                     families[i] = day
-                    if days_under_limits.sum() > 0 and days[day]['size'] > 125:
+                    if days_under_limits.sum() > 0 and days[day] > 125:
                         days_under_limits[day] = False
                     break
 
@@ -143,10 +135,8 @@ class Antibody:
         # Compute accounting penalty
         previous_day = self.days[-1]
         for day in reversed(self.days):
-            day_size = day['size']
-            previous_day_size = previous_day['size']
-            exponent = 1 / 2. + (day_size - previous_day_size) / 50.
-            accounting_penalty += (day_size - 125) / 400. * day_size**exponent
+            exponent = 1 / 2. + (day - previous_day) / 50.
+            accounting_penalty += (day - 125) / 400. * day**exponent
             previous_day = day
 
         self.fitness_value = preference_cost + accounting_penalty

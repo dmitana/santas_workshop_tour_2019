@@ -51,8 +51,8 @@ class TestAntibody(unittest.TestCase):
             ]
         )
         families = np.array([i for i in range(1, n_days + 1)])
-        days = np.array([{'size': family_size} for _ in range(n_days)])
-        days[0]['size'] += 1
+        days = np.array([family_size] * n_days)
+        days[0] += 1
 
         expected_fitness = 50 * 2 + 100 + 200 * 2 + 300 * 2 + 400 + 500 * 2
         expected_fitness += (9 * 3 + 18 * 2 + 36 * 4 + 199 + 398) * family_size
