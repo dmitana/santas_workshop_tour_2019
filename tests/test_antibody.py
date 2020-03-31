@@ -1,11 +1,48 @@
 import unittest
 import numpy as np
 import pandas as pd
+import os
+from tests.helpers import get_df_families
 from santas_workshop_tour.antibody import Antibody
 
 
 class TestAntibody(unittest.TestCase):
     """Class for testing methods of `Antibody` class."""
+    def test_generate_solution(self):
+        """Test random solution generating."""
+        expected_min_day_size = 125
+        expected_max_day_size = 300
+        real_data_path = 'data/family_data.csv'
+
+        dfs = [get_df_families(1000, 20)]
+        if os.path.isfile(real_data_path):
+            dfs.append(pd.read_csv('data/family_data.csv'))
+
+        for df_families in dfs:
+            antibody = Antibody()
+            antibody.generate_solution(df_families)
+
+            day_sizes = {}
+            for i, day in enumerate(antibody.families):
+                value = day_sizes.get(day, 0)
+                day_sizes[day] = value + df_families.iloc[i]['n_people']
+
+            for i, size in enumerate(antibody.days):
+                expected_day_size = day_sizes[i]
+                self.assertTrue(
+                    expected_min_day_size <= size <= expected_max_day_size,
+                    msg=f'Number of people scheduled for `{i + 1}th` day is '
+                        f'`{size}`, expected to be '
+                        f'in `<{expected_min_day_size}, '
+                        f'{expected_max_day_size}>`.'
+                )
+                self.assertEqual(
+                    size,
+                    expected_day_size,
+                    msg=f'Number of people scheduled for `{i + 1}th` day is '
+                        f'{size}, expected `{expected_day_size}`.'
+                )
+
     def test_affinity(self):
         """Test affinity computation."""
         combinations = (
@@ -30,26 +67,8 @@ class TestAntibody(unittest.TestCase):
         """Test fitness computation."""
         family_size = 126
         n_days = 11
-        df_families = pd.DataFrame(
-            [
-                [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size + 1],
-                [1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [4, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [6, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [7, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size],
-                [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, family_size]
-            ],
-            columns=[
-                'family_id', 'choice_0', 'choice_1', 'choice_2', 'choice_3',
-                'choice_4', 'choice_5', 'choice_6', 'choice_7', 'choice_8',
-                'choice_9', 'n_people'
-            ]
-        )
+        df_families = get_df_families(n_days, family_size)
+        df_families.iloc[0]['n_people'] += 1
         families = np.array([i for i in range(1, n_days + 1)])
         days = np.array([family_size] * n_days)
         days[0] += 1
