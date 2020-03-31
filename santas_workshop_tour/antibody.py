@@ -138,11 +138,12 @@ class Antibody:
             preference_cost += consolation_gift
 
         # Compute accounting penalty
-        for i, day in reversed(list(enumerate(self.days))):
-            previous_day_index = i + 1 if i != len(self.days) - 1 else i
-            previous_day_size = self.days[previous_day_index]['size']
+        previous_day = self.days[-1]
+        for day in reversed(self.days):
             day_size = day['size']
+            previous_day_size = previous_day['size']
             exponent = 1 / 2. + (day_size - previous_day_size) / 50.
             accounting_penalty += (day_size - 125) / 400. * day_size**exponent
+            previous_day = day
 
         return preference_cost + accounting_penalty
