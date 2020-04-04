@@ -16,7 +16,7 @@ class TestAntibody(unittest.TestCase):
 
         dfs = [get_df_families(1000, 20)]
         if os.path.isfile(real_data_path):
-            dfs.append(pd.read_csv('data/family_data.csv'))
+            dfs.append(pd.read_csv(real_data_path))
 
         for df_families in dfs:
             antibody = Antibody()
