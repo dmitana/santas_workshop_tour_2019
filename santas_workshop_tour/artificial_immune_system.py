@@ -89,6 +89,9 @@ class ArtificialImmuneSystem:
         for _ in range(self.n_generations):
             self.fitness(population)
             clones = self.clonator.clone(population)
-            clones = self.mutator.mutate(clones)
+            clones = self.mutator.mutate(
+                clones,
+                self.df_families['n_people'].values
+            )
             self.affinity(clones)
             population = self.selector.select(clones)
