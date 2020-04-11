@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 
 class Clonator(ABC):
     """Clonator abstract class."""
+
     @abstractmethod
     def clone(self, population):
         """
@@ -21,6 +22,7 @@ class BasicClonator(Clonator):
     Basic Clonator implementation using `population` inverse fitness
     values.
     """
+
     def clone(self, population):
         """
         Creates clones for each member of `population`.

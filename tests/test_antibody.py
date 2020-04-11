@@ -8,6 +8,7 @@ from santas_workshop_tour.antibody import Antibody
 
 class TestAntibody(unittest.TestCase):
     """Class for testing methods of `Antibody` class."""
+
     def test_generate_solution(self):
         """Test random solution generating."""
         expected_min_day_size = 125
@@ -75,8 +76,8 @@ class TestAntibody(unittest.TestCase):
 
         expected_fitness = 50 * 2 + 100 + 200 * 2 + 300 * 2 + 400 + 500 * 2
         expected_fitness += (9 * 3 + 18 * 2 + 36 * 4 + 199 + 398) * family_size
-        expected_fitness += 1 / 400. * family_size**(1 / 2.) * (n_days - 1)
-        expected_fitness += 2 / 400. * (family_size + 1)**(1 / 2. + 1 / 50.)
+        expected_fitness += 1 / 400. * family_size ** (1 / 2.) * (n_days - 1)
+        expected_fitness += 2 / 400. * (family_size + 1) ** (1 / 2. + 1 / 50.)
 
         antibody = Antibody(families=families, days=days)
         antibody.fitness(df_families)

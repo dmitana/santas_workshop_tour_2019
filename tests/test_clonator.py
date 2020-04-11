@@ -5,6 +5,7 @@ from santas_workshop_tour.clonator import BasicClonator
 
 class TestClonator(unittest.TestCase):
     """Class for testing methods of `Clonator` classes."""
+
     def test_basic_clone_solutions(self):
         """
         Test number of clones created by clone method of `BasicClonator`

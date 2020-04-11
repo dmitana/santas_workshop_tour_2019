@@ -6,6 +6,7 @@ class Antibody:
     This class represents one solution to the Santa's Workshop 2019
     problem.
     """
+
     def __init__(self, families=None, days=None):
         """
         Create a new object of class `Antibody`.
@@ -136,7 +137,7 @@ class Antibody:
         previous_day = self.days[-1]
         for day in reversed(self.days):
             exponent = 1 / 2. + (day - previous_day) / 50.
-            accounting_penalty += (day - 125) / 400. * day**exponent
+            accounting_penalty += (day - 125) / 400. * day ** exponent
             previous_day = day
 
         self.fitness_value = preference_cost + accounting_penalty
