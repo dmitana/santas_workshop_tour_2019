@@ -30,8 +30,8 @@ class BasicSelector(Selector):
         Members in population are selected if their affinity is not
         larger than specified threshold.
 
-        :param population: list, list of `Antibody` objects
-        :return: list, list of `Antibody` objects
+        :param population: list, list of `Antibody` objects.
+        :return: list, list of `Antibody` objects.
         """
         return list(
             filter(

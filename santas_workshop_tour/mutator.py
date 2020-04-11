@@ -12,7 +12,7 @@ class Mutator(ABC):
         Mutate given `population`.
 
         :param population: list, list of `Antibody` objects.
-        :param families_sizes: list, list of sizes of all families
+        :param families_sizes: list, list of sizes of all families.
         :return: list, list of `Antibody` objects.
         """
         pass
@@ -28,7 +28,7 @@ class BasicMutator(Mutator):
         Mutate `population` of `Antibody` objects.
 
         :param population: list, list of `Antibody` objects to mutate.
-        :param families_sizes: list, list of sizes of all families
+        :param families_sizes: list, list of sizes of all families.
         :return: list, list of mutated `Antibody` objects.
         """
         for member in population:
@@ -44,8 +44,8 @@ class BasicMutator(Mutator):
         Higher fitness means worse solution and therefore more mutations
         and vice versa.
 
-        :param antibody: Antibody, Antibody which will be mutated
-        :param families_sizes: list, list of sizes of all families
+        :param antibody: Antibody, Antibody which will be mutated.
+        :param families_sizes: list, list of sizes of all families.
         """
         n_mutations = round(math.sqrt(antibody.fitness_value))
         n_families = len(families_sizes)
