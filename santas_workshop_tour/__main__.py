@@ -1,3 +1,4 @@
+import logging
 import pandas as pd
 from santas_workshop_tour.cli import MyArgumentParser, MappingAction
 from santas_workshop_tour.clonator import BasicClonator
@@ -6,6 +7,13 @@ from santas_workshop_tour.selector import BasicSelector
 from santas_workshop_tour.artificial_immune_system import \
     ArtificialImmuneSystem
 
+logging_level_mapping = {
+    'critical': logging.CRITICAL,
+    'error': logging.ERROR,
+    'warning': logging.WARNING,
+    'info': logging.INFO,
+    'debug': logging.DEBUG
+}
 clonator_mapping = {
     'basic': BasicClonator,
 }
@@ -23,6 +31,23 @@ def main(args):
 
     :param args: dict, argparse arguments.
     """
+    # Create logger for santas_workshop_tour package
+    logger = logging.getLogger('santas_workshop_tour')
+    logger.setLevel(args.logging_level)
+
+    # Create console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(args.logging_level)
+
+    # Create formatter and add it to the handlers
+    fmt = '%(asctime)-15s - %(name)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(fmt=fmt, datefmt='%Y-%m-%d %H:%M:%S')
+    ch.setFormatter(formatter)
+
+    # Add handlers to the logger
+    logger.addHandler(ch)
+
+    # Run artificial immune system optimization
     ais = ArtificialImmuneSystem(
         df_families=pd.read_csv(args.data_file_path),
         clonator=args.clonator(),
@@ -108,6 +133,16 @@ if __name__ == '__main__':
         required=True,
         type=int,
         help='Number of generations.'
+    )
+
+    # Optional arguments
+    parser.add_argument(
+        '--logging-level',
+        required=False,
+        action=MappingAction,
+        mapping=logging_level_mapping,
+        default='info',
+        help='Logging level (default: %(default)s).'
     )
 
     main(parser.parse_args())

@@ -1,3 +1,4 @@
+import logging
 from santas_workshop_tour.antibody import Antibody
 
 
@@ -40,6 +41,8 @@ class ArtificialImmuneSystem:
         self.selector = selector
         self.population_size = population_size
         self.n_generations = n_generations
+        self._logger = logging.getLogger(__name__) \
+            .getChild(self.__class__.__name__)
 
     def generate_population(self):
         """
@@ -91,16 +94,27 @@ class ArtificialImmuneSystem:
         Optimize solution for data in `self.df_families`.
         """
         # Initialization
+        self._logger.info('Generating initial population')
         population = self.generate_population()
+        self._logger.debug('Computing affinity')
         self.affinity(population)
 
         # Optimization loop
-        for _ in range(self.n_generations):
-            self.fitness(population)
+        for i in range(self.n_generations):
+            self._logger.info(f'Generation {i+1}')
+            self._logger.debug('Computing fitness')
+            min_fitness, avg_fitness = self.fitness(population)
+            self._logger.debug('Cloning')
             clones = self.clonator.clone(population)
+            self._logger.debug('Mutating')
             clones = self.mutator.mutate(
                 clones,
                 self.df_families['n_people'].values
             )
+            self._logger.debug('Computing affinity')
             self.affinity(clones)
+            self._logger.debug('Selection')
             population = self.selector.select(clones)
+            self._logger.info(
+                f'Min fitness: {min_fitness}, Avg fitness: {avg_fitness}'
+            )

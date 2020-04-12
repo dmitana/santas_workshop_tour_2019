@@ -16,6 +16,7 @@ class MappingAction(argparse.Action):
         option_strings,
         mapping,
         choices=None,
+        default=None,
         type=str,
         required=True,
         *args,
@@ -25,6 +26,7 @@ class MappingAction(argparse.Action):
         super().__init__(
             option_strings=option_strings,
             choices=mapping.keys(),
+            default=self._mapping.get(default),
             type=type,
             required=required,
             *args,
