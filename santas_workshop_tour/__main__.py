@@ -1,11 +1,20 @@
-import argparse
+import pandas as pd
+from santas_workshop_tour.cli import MyArgumentParser, MappingAction
+from santas_workshop_tour.clonator import BasicClonator
+from santas_workshop_tour.mutator import BasicMutator
+from santas_workshop_tour.selector import BasicSelector
 from santas_workshop_tour.artificial_immune_system import \
     ArtificialImmuneSystem
 
-
-class MyArgumentParser(argparse.ArgumentParser):
-    def convert_arg_line_to_args(self, arg_line):
-        return arg_line.split()
+clonator_mapping = {
+    'basic': BasicClonator,
+}
+mutator_mapping = {
+    'basic': BasicMutator,
+}
+selector_mapping = {
+    'basic': BasicSelector
+}
 
 
 def main(args):
@@ -14,11 +23,22 @@ def main(args):
 
     :param args: dict, argparse arguments.
     """
-    ArtificialImmuneSystem(args.data_file_path)
+    ais = ArtificialImmuneSystem(
+        df_families=pd.read_csv(args.data_file_path),
+        clonator=args.clonator(),
+        mutator=args.mutator(),
+        selector=args.selector(
+            affinity_threshold=args.affinity_threshold
+        ),
+        population_size=args.population_size,
+        n_generations=args.n_generations
+    )
+    ais.optimize()
 
 
 if __name__ == '__main__':
     parser = MyArgumentParser(
+        prog='santas_workshop_tour',
         description="Program to solve the Santa's Workshop Tour 2019 problem.",
         fromfile_prefix_chars='@'
     )
@@ -32,6 +52,62 @@ if __name__ == '__main__':
         required=True,
         type=str,
         help='Path to the data to be optimized.'
+    )
+
+    # Cloning algorithm required named arguments
+    parser_clonator_required_named = parser.add_argument_group(
+        'cloning algorithm required named arguments'
+    )
+    parser_clonator_required_named.add_argument(
+        '--clonator',
+        action=MappingAction,
+        mapping=clonator_mapping,
+        help='Cloning algorithm to be used.'
+    )
+
+    # Mutation algorithm required named arguments
+    parser_mutator_required_named = parser.add_argument_group(
+        'mutation algorithm required named arguments'
+    )
+    parser_mutator_required_named.add_argument(
+        '--mutator',
+        action=MappingAction,
+        mapping=mutator_mapping,
+        help='Mutation algorithm to be used.'
+    )
+
+    # Selection algorithm required named arguments
+    parser_selector_required_named = parser.add_argument_group(
+        'selection algorithm required named arguments'
+    )
+    parser_selector_required_named.add_argument(
+        '--selector',
+        action=MappingAction,
+        mapping=selector_mapping,
+        help='Selection algorithm to be used.'
+    )
+    parser_selector_required_named.add_argument(
+        '--affinity-threshold',
+        required=True,
+        type=int,
+        help='Threshold according to which the selection is done.'
+    )
+
+    # Artificial Immune System algorithm required named arguments
+    parser_ais_required_named = parser.add_argument_group(
+        'artificial immune system algorithm required named arguments'
+    )
+    parser_ais_required_named.add_argument(
+        '--population-size',
+        required=True,
+        type=int,
+        help='Size of population.'
+    )
+    parser_ais_required_named.add_argument(
+        '--n-generations',
+        required=True,
+        type=int,
+        help='Number of generations.'
     )
 
     main(parser.parse_args())
