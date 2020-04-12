@@ -4,7 +4,16 @@ from santas_workshop_tour.antibody import Antibody
 class ArtificialImmuneSystem:
     """
     Class representing Artificial Immune System algorithm.
+
+    :param df_families: pandas.DataFrame, contains size and
+        preferences of all families. Data to be optimized.
+    :param clonator: Clonator, object to perform cloning.
+    :param mutator: Mutator, object to perform mutations.
+    :param selector: Selector, object to perform selection.
+    :param population_size: int, size of population.
+    :param n_generations: int, number of generations.
     """
+
     def __init__(
         self,
         df_families,

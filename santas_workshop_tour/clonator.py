@@ -47,7 +47,7 @@ class BasicClonator(Clonator):
                 num_of_clones = round(math.log2(fitness_diff))
             else:
                 num_of_clones = 1
-            for i in range(num_of_clones):
+            for _ in range(num_of_clones):
                 clones.append(copy.deepcopy(member))
 
         return clones

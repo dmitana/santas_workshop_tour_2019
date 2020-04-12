@@ -2,9 +2,23 @@ from abc import ABC, abstractmethod
 
 
 class Selector(ABC):
-    """Selector abstract class."""
+    """
+    Selector abstract class.
 
-    def __init__(self, affinity_threshold=None):
+    :param affinity_threshold: int, threshold according to which the
+        selection is done.
+    """
+
+    def __init__(self, affinity_threshold):
+        """
+        Constructor of `Selector` class.
+
+        Since, `Selector` is an abstract class, this constructor is used
+        to set attributes that will be inherited.
+
+        :param affinity_threshold: int, threshold according to which the
+            selection is done.
+        """
         self.affinity_threshold = affinity_threshold
 
     @abstractmethod

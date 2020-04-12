@@ -5,6 +5,14 @@ class Antibody:
     """
     This class represents one solution to the Santa's Workshop 2019
     problem.
+
+    :param families: numpy.ndarray (default: None), array of target
+        days for each family, where index represents the family.
+    :param days: numpy.ndarray (default: None), array of number of
+        people scheduled for each day, where index represents the
+        day.
+    :param affinity_value: int (default: 0), affinity of antibody.
+    :param fitness_value: float (default: 0.0), fitness of antibody.
     """
 
     def __init__(self, families=None, days=None):
