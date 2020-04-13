@@ -56,7 +56,8 @@ def main(args):
             affinity_threshold=args.affinity_threshold
         ),
         population_size=args.population_size,
-        n_generations=args.n_generations
+        n_generations=args.n_generations,
+        n_cpu=args.n_cpu
     )
     ais.optimize()
 
@@ -143,6 +144,12 @@ if __name__ == '__main__':
         mapping=logging_level_mapping,
         default='info',
         help='Logging level (default: %(default)s).'
+    )
+    parser.add_argument(
+        '--n-cpu',
+        type=int,
+        default=1,
+        help='Number of CPU to be used (default: %(default)s).'
     )
 
     main(parser.parse_args())

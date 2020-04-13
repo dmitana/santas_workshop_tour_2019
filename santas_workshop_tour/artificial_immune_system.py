@@ -1,4 +1,6 @@
 import logging
+import multiprocessing
+from functools import partial
 from santas_workshop_tour.antibody import Antibody
 
 
@@ -13,6 +15,7 @@ class ArtificialImmuneSystem:
     :param selector: Selector, object to perform selection.
     :param population_size: int, size of population.
     :param n_generations: int, number of generations.
+    :param n_cpu: int (default: 1), number of CPU to be used.
     """
 
     def __init__(
@@ -22,7 +25,8 @@ class ArtificialImmuneSystem:
         mutator,
         selector,
         population_size,
-        n_generations
+        n_generations,
+        n_cpu=1
     ):
         """
         Create a new object of class `ArtificialImmuneSystem`.
@@ -34,6 +38,7 @@ class ArtificialImmuneSystem:
         :param selector: Selector, object to perform selection.
         :param population_size: int, size of population.
         :param n_generations: int, number of generations.
+        :param n_cpu: int (default: 1), number of CPU to be used.
         """
         self.df_families = df_families
         self.clonator = clonator
@@ -41,6 +46,7 @@ class ArtificialImmuneSystem:
         self.selector = selector
         self.population_size = population_size
         self.n_generations = n_generations
+        self.n_cpu = n_cpu
         self._logger = logging.getLogger(__name__) \
             .getChild(self.__class__.__name__)
 
@@ -72,6 +78,19 @@ class ArtificialImmuneSystem:
                 a1.affinity_value += affinity
                 a2.affinity_value += affinity
 
+    @staticmethod
+    def _fitness(antibody, df_families=None):
+        """
+        Compute fitness of given `antibody`.
+
+        Helper method for parallel computation.
+
+        :param antibody: Antibody, antibody to be fitness computed for.
+        :param df_families: pandas.DataFrame, contains size and
+            preferences of all families. Data to be optimized.
+        """
+        return antibody.fitness(df_families)
+
     def fitness(self, population):
         """
         Compute fitness of each antibody in `population`.
@@ -85,13 +104,48 @@ class ArtificialImmuneSystem:
         best_antibody = Antibody()
         best_antibody.fitness_value = 999999999999
 
+        with multiprocessing.Pool(self.n_cpu) as pool:
+            fn = partial(self._fitness, df_families=self.df_families)
+            population = pool.map(fn, population)
+
         for antibody in population:
-            antibody.fitness(self.df_families)
             sum_fitness += antibody.fitness_value
             if antibody.fitness_value < best_antibody.fitness_value:
                 best_antibody = antibody
 
         return best_antibody, sum_fitness / len(population)
+
+    # TODO: add test
+    def fitness_clones(self, clones):
+        """
+        Compute fitness of each clone in `clones`.
+
+        For utilization of parallel computing, clones are flatten to 1D
+        list before fitness computation and then are recreated with
+        right shape.
+
+        :param clones: list, list of list of `Antibody` objects.
+        :return: list, list of list of `Antibody` objects.
+        """
+        sizes, aux_clones = [], []
+
+        # Flat clones to 1D list
+        for list_of_clones in clones:
+            for clone in list_of_clones:
+                aux_clones.append(clone)
+            sizes.append(len(list_of_clones))
+
+        # Compute fitness in parallel
+        self.fitness(aux_clones)
+
+        # Recreate clones with right shape
+        clones, start = [], 0
+        for size in sizes:
+            end = start + size
+            clones.append(aux_clones[start:end])
+            start = end
+
+        return clones
 
     def select_best(self, population, clones):
         """
@@ -139,8 +193,7 @@ class ArtificialImmuneSystem:
             )
 
             self._logger.debug('Clones fitness computation')
-            for list_of_clones in clones:
-                self.fitness(list_of_clones)
+            clones = self.fitness_clones(clones)
 
             self._logger.debug(
                 f'Best antibody from population and clones selection'
