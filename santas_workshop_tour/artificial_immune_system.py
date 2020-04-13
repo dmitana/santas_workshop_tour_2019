@@ -61,9 +61,18 @@ class ArtificialImmuneSystem:
         :return: list, list of `Antibody` object.
         """
         n = self.population_size if n is None else n
-        return [
-            Antibody().generate_solution(self.df_families) for _ in range(n)
-        ]
+        population = []
+        with multiprocessing.Pool(self.n_cpu) as pool:
+            for _ in range(n):
+                pool.apply_async(
+                    Antibody().generate_solution,
+                    args=[self.df_families],
+                    callback=lambda x: population.append(x)
+                )
+            pool.close()
+            pool.join()
+
+        return population
 
     @staticmethod
     def affinity(population):
