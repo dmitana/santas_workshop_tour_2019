@@ -18,12 +18,22 @@ class TestArtificialImmuneSystem(unittest.TestCase):
                 df_families=df_families, clonator=None, mutator=None,
                 selector=None, population_size=population_size, n_generations=0
             )
+
             population = ais.generate_population()
             self.assertEqual(
                 len(population),
                 population_size,
                 msg=f'Population size is `{len(population)}, expected '
                     f'`{population_size}`.'
+            )
+
+            population_size += 1
+            population = ais.generate_population(n=population_size)
+            self.assertEqual(
+                len(population),
+                population_size,
+                msg=f'Population size from parameter `n` is '
+                    f'`{len(population)}, expected `{population_size}`.'
             )
 
     def test_affinity(self):
@@ -64,7 +74,8 @@ class TestArtificialImmuneSystem(unittest.TestCase):
             df_families=df_families, clonator=None, mutator=None,
             selector=None, population_size=0, n_generations=0
         )
-        fitness_min, fitness_avg = ais.fitness(population)
+        best_antibody, fitness_avg = ais.fitness(population)
+        fitness_min = best_antibody.fitness_value
 
         self.assertAlmostEqual(
             fitness_min,
@@ -80,3 +91,38 @@ class TestArtificialImmuneSystem(unittest.TestCase):
             msg=f'Average fitness is `{fitness_avg}`, expected '
                 f'`{expected_fitness_avg}`.'
         )
+
+    def test_select_best(self):
+        """
+        Test selecting of best antibodies from population and clones.
+        """
+        ais = ArtificialImmuneSystem(
+            df_families=None, clonator=None, mutator=None,
+            selector=None, population_size=0, n_generations=0
+        )
+        population_fitness = [25, 15, 5, 38]
+        clones_fitness = [[20, 20], [16, 16], [20, 15], [10, 40]]
+        min_fitnesses = [20, 15, 5, 10]
+        population, clones = [], []
+
+        for fitness in population_fitness:
+            antibody = Antibody()
+            antibody.fitness_value = fitness
+            population.append(antibody)
+
+        for list_of_fitnesses in clones_fitness:
+            clones_list = []
+            for fitness in list_of_fitnesses:
+                antibody = Antibody()
+                antibody.fitness_value = fitness
+                clones_list.append(antibody)
+            clones.append(clones_list)
+
+        new_population = ais.select_best(population, clones)
+        for antibody, expected_fitness in zip(new_population, min_fitnesses):
+            self.assertEqual(
+                antibody.fitness_value,
+                expected_fitness,
+                msg=f'Fitness of antibody is `{antibody.fitness_value}`, '
+                    f'expected `{expected_fitness}`.'
+            )
