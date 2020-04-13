@@ -9,6 +9,34 @@ from santas_workshop_tour.antibody import Antibody
 class TestAntibody(unittest.TestCase):
     """Class for testing methods of `Antibody` class."""
 
+    def test_equal(self):
+        """Test equal comparison between two antibodies."""
+        fitnesses = (0, 5, 10)
+        for fitness in fitnesses:
+            a1 = Antibody()
+            a1.fitness_value = fitness
+            a2 = Antibody()
+            a2.fitness_value = fitness
+            self.assertEqual(
+                a1,
+                a2,
+                msg=f'Antibody `{a1}` should equal to `{a2}`.'
+            )
+
+    def test_lower_than(self):
+        """Test less than comparison between two antibodies."""
+        fitnesses = ((0, 1), (5, 10))
+        for f1, f2 in fitnesses:
+            a1 = Antibody()
+            a1.fitness_value = f1
+            a2 = Antibody()
+            a2.fitness_value = f2
+            self.assertLess(
+                a1,
+                a2,
+                msg=f'Antibody `{a1}` should be less than `{a2}`.'
+            )
+
     def test_generate_solution(self):
         """Test random solution generating."""
         expected_min_day_size = 125

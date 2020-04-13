@@ -30,6 +30,33 @@ class Antibody:
         self.affinity_value = 0
         self.fitness_value = 0.0
 
+    def __eq__(self, other):
+        """
+        Rich comparison method for equivalence.
+
+        :param other: Antibody, antibody to be compared with.
+        :return: bool|NotImplemented, `True` if fitness values are equal
+            otherwise `False`. `NotImplemented` is returned if `other`
+            is not instance of `Antibody` class.
+        """
+        if not isinstance(other, Antibody):
+            return NotImplemented
+        return self.fitness_value == other.fitness_value
+
+    def __lt__(self, other):
+        """
+        Rich comparison method for less than.
+
+        :param other: Antibody, antibody to be compared with.
+        :return: bool|NotImplemented, `True` if self's fitness values is
+            lower than other's fitness value otherwise `False`.
+            `NotImplemented` is returned if `other` is not instance of
+            `Antibody` class.
+        """
+        if not isinstance(other, Antibody):
+            return NotImplemented
+        return self.fitness_value < other.fitness_value
+
     def generate_solution(self, df_families):
         """
         Generate random solution.
