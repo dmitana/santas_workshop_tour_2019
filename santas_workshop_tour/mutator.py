@@ -23,17 +23,18 @@ class BasicMutator(Mutator):
     Basic Mutator implementation.
     """
 
-    def mutate(self, population, families_sizes):
+    def mutate(self, clones, families_sizes):
         """
         Mutate `population` of `Antibody` objects.
 
-        :param population: list, list of `Antibody` objects to mutate.
+        :param clones: list, list of list of `Antibody` objects.
         :param families_sizes: list, list of sizes of all families.
-        :return: list, list of mutated `Antibody` objects.
+        :return: list, list of list of mutated `Antibody` objects.
         """
-        for member in population:
-            self._mutate(member, families_sizes)
-        return population
+        for clones_list in clones:
+            for clone in clones_list:
+                self._mutate(clone, families_sizes)
+        return clones
 
     def _mutate(self, antibody, families_sizes):
         """

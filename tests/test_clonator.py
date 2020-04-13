@@ -10,33 +10,37 @@ class TestClonator(unittest.TestCase):
         """
         Test number of clones created by clone method of `BasicClonator`
         class.
-
-        In `fitness_clones_pair` there are pairs of antibody fitness and
-        expected cumulative number of clones. Cumulative number of
-        clones is calculated with regards to all fitness values from
-        `fitness_clones_pair` up to and including checked pair.
         """
         antibodies = []
+
+        # Pairs of antibody fitness and expected number of clones
         fitness_clones_pair = [
-            [128, 1],
-            [64, 7],
-            [256, 16],
-            [127, 23],
-            [254, 24]
+            [128, 7],
+            [64, 8],
+            [256, 1],
+            [127, 7],
+            [254, 1]
         ]
 
-        basic_clonator = BasicClonator()
-
-        for fitness, clones_cumulative in fitness_clones_pair:
+        for fitness, _ in fitness_clones_pair:
             antibody = Antibody()
             antibody.fitness_value = fitness
             antibodies.append(antibody)
 
-            returned_clones = basic_clonator.clone(antibodies)
+        basic_clonator = BasicClonator()
+        clones_lists = basic_clonator.clone(antibodies)
+
+        self.assertEqual(
+            len(clones_lists),
+            len(fitness_clones_pair),
+            msg=f'Number of lists of clones is `{len(clones_lists)}`, '
+                f'expected `{len(fitness_clones_pair)}`.'
+        )
+
+        for ((_, n_clones), clones) in zip(fitness_clones_pair, clones_lists):
             self.assertEqual(
-                len(returned_clones),
-                clones_cumulative,
-                msg=f'Cumulative number of created clones was'
-                    f'`{len(returned_clones)}`, expected '
-                    f'`{clones_cumulative}`.'
+                len(clones),
+                n_clones,
+                msg=f'Number of created clones is `{len(clones)}`, '
+                    f'expected `{n_clones}`.'
             )

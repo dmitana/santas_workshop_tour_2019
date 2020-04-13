@@ -32,7 +32,8 @@ class BasicClonator(Clonator):
 
         :param population: list, list of `Antibody` objects which will
             be cloned.
-        :return: list, list of `Antibody` objects, which are clones of
+        :return: list, list of list of `Antibody` objects. Antibodies in
+            i-th second level list are clones of i-th antibody in the
             `population`.
         """
         clones = []
@@ -47,7 +48,8 @@ class BasicClonator(Clonator):
                 num_of_clones = round(math.log2(fitness_diff))
             else:
                 num_of_clones = 1
-            for _ in range(num_of_clones):
-                clones.append(copy.deepcopy(member))
+            clones.append([
+                copy.deepcopy(member) for _ in range(num_of_clones)
+            ])
 
         return clones

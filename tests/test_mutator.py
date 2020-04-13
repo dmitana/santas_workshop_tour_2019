@@ -25,9 +25,9 @@ class TestMutator(unittest.TestCase):
 
         basic_mutator = BasicMutator()
         mutated_antibody = basic_mutator.mutate(
-            [copy.deepcopy(antibody)],
+            [[copy.deepcopy(antibody)]],
             [family_size] * n_families
-        )[0]
+        )[0][0]
 
         for i in range(n_families):
             if antibody.families[i] != mutated_antibody.families[i]:
