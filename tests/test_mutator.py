@@ -13,7 +13,7 @@ class TestMutator(unittest.TestCase):
         Test whether created `Antibody` was mutated by `BasicMutator`
         class.
         """
-        fitness_value = 25
+        fitness_value = 125
         n_mutations = 5
         n_performed_mutations = 0
         n_families, family_size = 1000, 20

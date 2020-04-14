@@ -48,7 +48,7 @@ class BasicMutator(Mutator):
         :param antibody: Antibody, Antibody which will be mutated.
         :param families_sizes: list, list of sizes of all families.
         """
-        n_mutations = round(math.sqrt(antibody.fitness_value))
+        n_mutations = round(math.pow(antibody.fitness_value, 1/3))
         n_families = len(families_sizes)
         families_original_days = {}
         for _ in range(n_mutations):
