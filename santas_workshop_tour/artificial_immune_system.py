@@ -79,13 +79,23 @@ class ArtificialImmuneSystem:
         """
         Compute affinity between each antibody in `population`.
 
+        Before calculation of affinity affinity values of all members of
+        population are reset to 0 to prevent transfer of affinity across
+        generations.
         :param population: list, list of `Antibody` objects.
+        :return: float, average affinity value
         """
+        for member in population:
+            member.affinity_value = 0
+
+        affinity_sum = 0
         for i, a1 in enumerate(population):
             for a2 in population[i + 1:]:
                 affinity = a1.affinity(a2)
                 a1.affinity_value += affinity
                 a2.affinity_value += affinity
+                affinity_sum += (2 * affinity)
+        return affinity_sum / len(population)
 
     @staticmethod
     def _fitness(antibody, df_families=None):
@@ -108,6 +118,7 @@ class ArtificialImmuneSystem:
         :return:
             Antibody, antibody with minimum fitness value.
             float, average fitness value.
+            list, list of antibodies with calculated fitness values.
         """
         sum_fitness = 0
         best_antibody = Antibody()
@@ -122,7 +133,7 @@ class ArtificialImmuneSystem:
             if antibody.fitness_value < best_antibody.fitness_value:
                 best_antibody = antibody
 
-        return best_antibody, sum_fitness / len(population)
+        return population, best_antibody, sum_fitness / len(population)
 
     # TODO: add test
     def fitness_clones(self, clones):
@@ -145,7 +156,7 @@ class ArtificialImmuneSystem:
             sizes.append(len(list_of_clones))
 
         # Compute fitness in parallel
-        self.fitness(aux_clones)
+        aux_clones, _, _ = self.fitness(aux_clones)
 
         # Recreate clones with right shape
         clones, start = [], 0
@@ -190,7 +201,7 @@ class ArtificialImmuneSystem:
         for i in range(self.n_generations):
             self._logger.info(f'Generation {i+1}')
             self._logger.debug('Fitness computation')
-            best_antibody, avg_fitness = self.fitness(population)
+            population, best_antibody, avg_fitness = self.fitness(population)
 
             self._logger.debug('Cloning')
             clones = self.clonator.clone(population)
@@ -210,7 +221,7 @@ class ArtificialImmuneSystem:
             population = self.select_best(population, clones)
 
             self._logger.debug('Affinity computation')
-            self.affinity(population)
+            avg_affinity = self.affinity(population)
 
             self._logger.debug('Selecting')
             population = self.selector.select(population)
@@ -225,5 +236,7 @@ class ArtificialImmuneSystem:
 
             self._logger.info(
                 f'Min fitness: {best_antibody.fitness_value}, '
-                f'Avg fitness: {avg_fitness}'
+                f'Avg fitness: {avg_fitness}, '
+                f'Avg affinity: {avg_affinity}'
             )
+            print()

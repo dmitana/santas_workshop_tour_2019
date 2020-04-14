@@ -72,9 +72,9 @@ class TestArtificialImmuneSystem(unittest.TestCase):
 
         ais = ArtificialImmuneSystem(
             df_families=df_families, clonator=None, mutator=None,
-            selector=None, population_size=0, n_generations=0
+            selector=None, population_size=0, n_generations=0, n_cpu=7
         )
-        best_antibody, fitness_avg = ais.fitness(population)
+        _, best_antibody, fitness_avg = ais.fitness(population)
         fitness_min = best_antibody.fitness_value
 
         self.assertAlmostEqual(
