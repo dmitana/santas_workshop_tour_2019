@@ -2,8 +2,9 @@ import logging
 import pandas as pd
 from santas_workshop_tour.cli import MyArgumentParser, MappingAction
 from santas_workshop_tour.clonator import BasicClonator
-from santas_workshop_tour.mutator import BasicMutator
-from santas_workshop_tour.selector import BasicSelector
+from santas_workshop_tour.mutator import BasicMutator, PreferenceMutator
+from santas_workshop_tour.selector import BasicSelector, \
+    PercentileAffinitySelector
 from santas_workshop_tour.artificial_immune_system import \
     ArtificialImmuneSystem
 
@@ -19,9 +20,11 @@ clonator_mapping = {
 }
 mutator_mapping = {
     'basic': BasicMutator,
+    'preference': PreferenceMutator
 }
 selector_mapping = {
-    'basic': BasicSelector
+    'basic': BasicSelector,
+    'percentile': PercentileAffinitySelector
 }
 
 

@@ -1,7 +1,7 @@
 import unittest
 import copy
 from santas_workshop_tour.antibody import Antibody
-from santas_workshop_tour.mutator import BasicMutator
+from santas_workshop_tour.mutator import BasicMutator, PreferenceMutator
 from tests.helpers import get_df_families
 
 
@@ -26,12 +26,52 @@ class TestMutator(unittest.TestCase):
         basic_mutator = BasicMutator()
         mutated_antibody = basic_mutator.mutate(
             [[copy.deepcopy(antibody)]],
-            [family_size] * n_families
+            df_families=df_families
         )[0][0]
 
         for i in range(n_families):
             if antibody.families[i] != mutated_antibody.families[i]:
                 n_performed_mutations += 1
+
+        self.assertEqual(
+            n_mutations,
+            n_performed_mutations,
+            msg=f'Number of mutations was `{n_performed_mutations}`, expected '
+                f'`{n_mutations}`.'
+        )
+
+    def test_preference_mutate_solutions(self):
+        """
+        Test whether created `Antibody` was mutated by `BasicMutator`
+        class.
+        """
+        fitness_value = 125
+        n_mutations = 5
+        n_performed_mutations = 0
+        n_families, family_size = 1000, 20
+        df_families = get_df_families(n_families, family_size)
+
+        antibody = Antibody()
+        antibody.generate_solution(df_families)
+        antibody.fitness_value = fitness_value
+
+        preference_mutator = PreferenceMutator()
+        mutated_antibody = preference_mutator.mutate(
+            [[copy.deepcopy(antibody)]],
+            df_families=df_families
+        )[0][0]
+
+        families_choices = df_families[[f'choice_{i}' for i in range(10)]] \
+            .values
+        for i in range(n_families):
+            if antibody.families[i] != mutated_antibody.families[i]:
+                n_performed_mutations += 1
+                self.assertTrue(
+                    mutated_antibody.families[i] in families_choices[i],
+                    msg=f'Day mutated family is going to workshop is '
+                        f'{antibody.families[i]}, expected one of '
+                        f'{families_choices[i]}.'
+                )
 
         self.assertEqual(
             n_mutations,
