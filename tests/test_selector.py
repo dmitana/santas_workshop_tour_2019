@@ -1,6 +1,8 @@
 import unittest
+import numpy as np
 from santas_workshop_tour.antibody import Antibody
-from santas_workshop_tour.selector import BasicSelector
+from santas_workshop_tour.selector import BasicSelector, \
+    PercentileAffinitySelector
 
 
 class TestSelector(unittest.TestCase):
@@ -31,3 +33,35 @@ class TestSelector(unittest.TestCase):
                     f'`{antibody.affinity_value}`, expected value smaller or '
                     f'equal to `{affinity_threshold}`.'
             )
+
+    def test_percentile_affinity_select_solutions(self):
+        """
+        Test whether selected `Antibody` objects were selected according
+        to `PercentileAffinitySelector` rules.
+        """
+        antibodies = []
+        affinities = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+        filtered_affinities = [
+            [15, 20, 25, 30, 35],
+            [15, 20, 25],
+            [15, 20],
+            [15]
+        ]
+
+        for affinity in affinities:
+            antibody = Antibody()
+            antibody.affinity_value = affinity
+            antibodies.append(antibody)
+
+        percentile_selector = PercentileAffinitySelector(affinity_threshold=50)
+        for affinities_list in filtered_affinities:
+            antibodies = percentile_selector.select(antibodies)
+
+            for i, antibody in enumerate(antibodies):
+                self.assertEqual(
+                    antibody.affinity_value,
+                    affinities_list[i],
+                    msg=f'Antibody had affinity value '
+                        f'`{antibody.affinity_value}`, expected '
+                        f'`{affinities_list[i]}`.'
+                )

@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABC, abstractmethod
 
 
@@ -52,4 +53,38 @@ class BasicSelector(Selector):
                 lambda x: x.affinity_value <= self.affinity_threshold,
                 population
             )
+        )
+
+
+class PercentileAffinitySelector(Selector):
+    """
+    Percentile Affinity Selector implementation.
+
+    Selects members of population according to percentile of affinity of
+    population. Affinity threshold is used as percentile.
+    """
+
+    def select(self, population):
+        """
+        Select new population from given `population`.
+
+        Members in population are selected, if their affinity is not
+        larger than percentile of affinity of population. Affinity
+        threshold is used as percentile.
+
+        :param population: list, list of `Antibody` objects.
+        :return: list, list of `Antibody` objects.
+        """
+        if not (0 <= self.affinity_threshold <= 100):
+            raise ValueError(
+                'Value of `affinity_threshold` must be from interval <0, 100>.'
+            )
+
+        percentile = np.percentile(
+            [x.affinity_value for x in population],
+            self.affinity_threshold
+        )
+
+        return list(
+            filter(lambda x: x.affinity_value <= percentile, population)
         )
