@@ -209,7 +209,7 @@ class ArtificialImmuneSystem:
             self._logger.debug('Mutating')
             clones = self.mutator.mutate(
                 clones,
-                self.df_families['n_people'].values
+                self.df_families
             )
 
             self._logger.debug('Clones fitness computation')
@@ -238,5 +238,5 @@ class ArtificialImmuneSystem:
                 f'Min fitness: {best_antibody.fitness_value}, '
                 f'Avg fitness: {avg_fitness}, '
                 f'Avg affinity: {avg_affinity}'
+                '\n'
             )
-            print()

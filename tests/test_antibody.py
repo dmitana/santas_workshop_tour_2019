@@ -56,11 +56,11 @@ class TestAntibody(unittest.TestCase):
                 value = day_sizes.get(day, 0)
                 day_sizes[day] = value + df_families.iloc[i]['n_people']
 
-            for i, size in enumerate(antibody.days):
-                expected_day_size = day_sizes[i]
+            for key, size in antibody.days.items():
+                expected_day_size = day_sizes[key]
                 self.assertTrue(
                     expected_min_day_size <= size <= expected_max_day_size,
-                    msg=f'Number of people scheduled for `{i + 1}th` day is '
+                    msg=f'Number of people scheduled for `{key + 1}th` day is '
                         f'`{size}`, expected to be '
                         f'in `<{expected_min_day_size}, '
                         f'{expected_max_day_size}>`.'
@@ -68,7 +68,7 @@ class TestAntibody(unittest.TestCase):
                 self.assertEqual(
                     size,
                     expected_day_size,
-                    msg=f'Number of people scheduled for `{i + 1}th` day is '
+                    msg=f'Number of people scheduled for `{key + 1}th` day is '
                         f'{size}, expected `{expected_day_size}`.'
                 )
 
@@ -99,7 +99,7 @@ class TestAntibody(unittest.TestCase):
         df_families = get_df_families(n_days, family_size)
         df_families.iloc[0]['n_people'] += 1
         families = np.array([i for i in range(1, n_days + 1)])
-        days = np.array([family_size] * n_days)
+        days = {i: family_size for i in range(n_days)}
         days[0] += 1
 
         expected_fitness = 50 * 2 + 100 + 200 * 2 + 300 * 2 + 400 + 500 * 2

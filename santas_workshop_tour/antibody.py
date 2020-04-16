@@ -8,8 +8,8 @@ class Antibody:
 
     :param families: numpy.ndarray (default: None), array of target
         days for each family, where index represents the family.
-    :param days: numpy.ndarray (default: None), array of number of
-        people scheduled for each day, where index represents the
+    :param days: dict (default: None), dictionary of number of
+        people scheduled for each day, where key represents the
         day.
     :param affinity_value: int (default: 0), affinity of antibody.
     :param fitness_value: float (default: 0.0), fitness of antibody.
@@ -73,24 +73,28 @@ class Antibody:
         """
         n_families, n_days = len(df_families), 100
         families = np.empty(n_families, dtype=int)
-        days = np.zeros(n_days, dtype=int)
-        days_under_limits = np.ones(n_days, dtype=np.bool)
+        days = {}
+        for i in range(1, n_days + 1):
+            days[i] = 0
+        days_under_limits = np.ones(n_days + 1, dtype=np.bool)
+        len_days_under_limits = n_days  # Index 0 is not used
 
         # Generate random day for each family
         for i in range(n_families):
             family_size = df_families.iloc[i]['n_people']
             while True:
                 # IF branch makes sure only days under limit are picked
-                if days_under_limits.sum() > 0:
-                    day = np.random.randint(0, days_under_limits.sum())
+                if len_days_under_limits > 0:
+                    day = np.random.randint(1, len_days_under_limits + 1)
                     day = np.nonzero(days_under_limits)[0][day]
                 else:
-                    day = np.random.randint(0, n_days)
+                    day = np.random.randint(1, n_days + 1)
                 if (days[day] + family_size) <= 300:
                     days[day] += family_size
                     families[i] = day
-                    if days_under_limits.sum() > 0 and days[day] > 125:
+                    if len_days_under_limits > 0 and days[day] > 125:
                         days_under_limits[day] = False
+                        len_days_under_limits -= 1
                     break
 
         self.families = families
@@ -169,8 +173,9 @@ class Antibody:
             preference_cost += consolation_gift
 
         # Compute accounting penalty
-        previous_day = self.days[-1]
-        for day in reversed(self.days):
+        days = list(self.days.values())
+        previous_day = days[-1]
+        for day in reversed(days):
             exponent = 1 / 2. + (day - previous_day) / 50.
             accounting_penalty += (day - 125) / 400. * day ** exponent
             previous_day = day
