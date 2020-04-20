@@ -60,7 +60,9 @@ def main(args):
         ),
         population_size=args.population_size,
         n_generations=args.n_generations,
-        n_cpu=args.n_cpu
+        n_cpu=args.n_cpu,
+        interactive_plot=args.interactive_plot,
+        output_directory=args.output_directory
     )
     ais.optimize()
 
@@ -153,6 +155,20 @@ if __name__ == '__main__':
         type=int,
         default=1,
         help='Number of CPU to be used (default: %(default)s).'
+    )
+    parser.add_argument(
+        '--interactive-plot',
+        action='store_true',
+        default=False,
+        help='Whether plot is rendering during optimization (default: '
+             '%(default)s).'
+    )
+    parser.add_argument(
+        '--output-directory',
+        type=str,
+        default='output',
+        help='Directory where output files (plot, best solution and '
+             'logs) will be saved (default: %(default)s).'
     )
 
     main(parser.parse_args())
