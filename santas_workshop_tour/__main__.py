@@ -1,4 +1,6 @@
 import logging
+import os
+from datetime import datetime
 import pandas as pd
 from santas_workshop_tour.cli import MyArgumentParser, MappingAction
 from santas_workshop_tour.clonator import BasicClonator
@@ -42,13 +44,26 @@ def main(args):
     ch = logging.StreamHandler()
     ch.setLevel(args.logging_level)
 
+    # Create file handler
+    if not os.path.isdir(args.output_directory):
+        os.makedirs(args.output_directory)
+    now = datetime.now().strftime('%Y-%m-%d-%H%M%S')
+    log_file_path = os.path.join(
+        args.output_directory,
+        f'logs_{now}.out'
+    )
+    fh = logging.FileHandler(log_file_path, mode='w')
+    fh.setLevel(logging.DEBUG)
+
     # Create formatter and add it to the handlers
     fmt = '%(asctime)-15s - %(name)s - %(levelname)s - %(message)s'
     formatter = logging.Formatter(fmt=fmt, datefmt='%Y-%m-%d %H:%M:%S')
     ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
 
     # Add handlers to the logger
     logger.addHandler(ch)
+    logger.addHandler(fh)
 
     # Run artificial immune system optimization
     ais = ArtificialImmuneSystem(
