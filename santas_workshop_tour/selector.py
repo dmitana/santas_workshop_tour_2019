@@ -8,9 +8,11 @@ class Selector(ABC):
 
     :param affinity_threshold: int, threshold according to which the
         selection is done.
+    :param select_type: string, whether selection is positive or
+        negative.
     """
 
-    def __init__(self, affinity_threshold):
+    def __init__(self, affinity_threshold, select_type='negative'):
         """
         Constructor of `Selector` class.
 
@@ -19,8 +21,15 @@ class Selector(ABC):
 
         :param affinity_threshold: int, threshold according to which the
             selection is done.
+        :param select_type: string, whether selection is positive or
+            negative.
         """
         self.affinity_threshold = affinity_threshold
+        allowed_select_type_values = ['positive', 'negative']
+        if select_type not in allowed_select_type_values:
+            raise ValueError(f'Allowed values for `select_type` attribute are '
+                             f'{allowed_select_type_values}.')
+        self.select_type = select_type
 
     @abstractmethod
     def select(self, population):
@@ -48,12 +57,18 @@ class BasicSelector(Selector):
         :param population: list, list of `Antibody` objects.
         :return: list, list of `Antibody` objects.
         """
-        return list(
-            filter(
+        if self.select_type == 'negative':
+            selected = filter(
                 lambda x: x.affinity_value <= self.affinity_threshold,
                 population
             )
-        )
+        else:
+            selected = filter(
+                lambda x: x.affinity_value >= self.affinity_threshold,
+                population
+            )
+
+        return list(selected)
 
 
 class PercentileAffinitySelector(Selector):
@@ -85,6 +100,15 @@ class PercentileAffinitySelector(Selector):
             self.affinity_threshold
         )
 
-        return list(
-            filter(lambda x: x.affinity_value <= percentile, population)
-        )
+        if self.select_type == 'negative':
+            selected = filter(
+                lambda x: x.affinity_value <= percentile,
+                population
+            )
+        else:
+            selected = filter(
+                lambda x: x.affinity_value >= percentile,
+                population
+            )
+
+        return list(selected)
