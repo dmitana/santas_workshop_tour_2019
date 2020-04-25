@@ -4,7 +4,8 @@ from datetime import datetime
 import pandas as pd
 from santas_workshop_tour.cli import MyArgumentParser, MappingAction
 from santas_workshop_tour.clonator import BasicClonator
-from santas_workshop_tour.mutator import BasicMutator, PreferenceMutator
+from santas_workshop_tour.mutator import BasicMutator, PreferenceMutator, \
+    AdvancedPreferenceMutator
 from santas_workshop_tour.selector import BasicSelector, \
     PercentileAffinitySelector
 from santas_workshop_tour.artificial_immune_system import \
@@ -22,7 +23,8 @@ clonator_mapping = {
 }
 mutator_mapping = {
     'basic': BasicMutator,
-    'preference': PreferenceMutator
+    'preference': PreferenceMutator,
+    'advanced_preference': AdvancedPreferenceMutator
 }
 selector_mapping = {
     'basic': BasicSelector,
