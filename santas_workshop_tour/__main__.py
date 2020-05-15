@@ -73,7 +73,8 @@ def main(args):
         clonator=args.clonator(),
         mutator=args.mutator(),
         selector=args.selector(
-            affinity_threshold=args.affinity_threshold
+            affinity_threshold=args.affinity_threshold,
+            select_type=args.select_type
         ),
         population_size=args.population_size,
         n_generations=args.n_generations,
@@ -139,6 +140,13 @@ if __name__ == '__main__':
         required=True,
         type=int,
         help='Threshold according to which the selection is done.'
+    )
+
+    parser_selector_required_named.add_argument(
+        '--select-type',
+        required=True,
+        type=str,
+        help='Whether selection will be positive or negative.'
     )
 
     # Artificial Immune System algorithm required named arguments
